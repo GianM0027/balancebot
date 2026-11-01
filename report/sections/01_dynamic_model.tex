@@ -1,0 +1,402 @@
+\section{Planar dynamic model}\label{sec:model}
+
+The equations of motion of the robot in the vertical plane are derived with
+the Euler--Lagrange method: the kinetic and potential energy are written as
+functions of the generalised coordinates, the motor torque is introduced as a
+generalised force, and the Euler--Lagrange equations give one equation of
+motion per coordinate.
+
+\subsection{Assumptions}
+
+\begin{itemize}
+  \item The robot moves in a straight line on flat, horizontal ground; the two
+        wheels move together and are modelled as a single wheel.
+  \item The robot consists of two rigid bodies: the body and the wheel.
+  \item The wheel rolls without slipping.
+  \item Friction, motor dynamics and tyre compliance are neglected.
+  \item The motor is fixed to the body. It applies a torque $\tau$ to the
+        wheel and, by action and reaction, a torque $-\tau$ to the body.
+\end{itemize}
+
+\begin{table}[h]
+\centering
+\caption{Parameters of the model.}
+\label{tab:params}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Symbol & Description & Unit \\
+\midrule
+$\mb$ & mass of the body & \si{kg} \\
+$\Ib$ & moment of inertia of the body about its centre of mass & \si{kg.m^2} \\
+$l$   & distance between the wheel axle and the body's centre of mass & \si{m} \\
+$\mw$ & mass of the wheel & \si{kg} \\
+$\Iw$ & moment of inertia of the wheel about the axle & \si{kg.m^2} \\
+$r$   & wheel radius & \si{m} \\
+$g$   & gravitational acceleration & \si{m/s^2} \\
+$\tau$ & motor torque applied to the wheel & \si{N.m} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Coordinates and conventions}
+
+The inertial frame (\cref{fig:model}) has the $x$ axis horizontal, the $z$
+axis vertical and pointing up, and the origin $O$ at the height of the wheel
+axle; $y$ completes the right-handed frame and points into the page. The
+configuration is described by:
+\begin{itemize}
+  \item $x$, the horizontal position of the wheel axle;
+  \item $\theta$, the angle of the body from the vertical, positive when the
+        top of the body tilts towards $+x$;
+  \item $\varphi$, the rotation angle of the wheel with respect to the ground,
+        positive when the wheel rolls towards $+x$.
+\end{itemize}
+Both angles are measured in radians and are positive clockwise in
+\cref{fig:model}. In the drawing $\theta>0$ and $\varphi>0$.
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[b]{\linewidth}
+  \centering\input{figures/robot_side}
+  \caption{Coordinates and parameters.}
+  \label{fig:model-kin}
+\end{subfigure}\\[1em]
+\begin{subfigure}[b]{\linewidth}
+  \centering\input{figures/actuation}
+  \caption{Motor torque pair and rolling without slipping.}
+  \label{fig:model-act}
+\end{subfigure}
+\caption{Planar model of the robot.}
+\label{fig:model}
+\end{figure}
+
+\subsection{Rolling constraint}
+
+If the wheel does not slip, the distance travelled by the axle equals the arc
+length unrolled on the ground (\cref{fig:model-act}). Choosing $\varphi=0$
+when $x=0$,
+\begin{equation}
+  x = r\varphi .
+  \label{eq:rolling}
+\end{equation}
+Differentiating with respect to time with the product rule, and using that the
+radius is constant ($\dot r = 0$):
+\begin{equation}
+  \dot x = \frac{\dd (r\varphi)}{\dd t} = \dot r\,\varphi + r\dot\varphi = r\dot\varphi
+  \qquad\Longrightarrow\qquad
+  \dot\varphi = \frac{\dot x}{r}.
+  \label{eq:rolling-vel}
+\end{equation}
+The constraint expresses $\varphi$ as a function of $x$, so the system has two
+degrees of freedom. The generalised coordinates are
+\begin{equation}
+  \q = \begin{bmatrix} x \\ \theta \end{bmatrix},
+  \qquad
+  \qd = \begin{bmatrix} \dot x \\ \dot\theta \end{bmatrix}.
+\end{equation}
+
+\subsection{Position and velocity of the body's centre of mass}
+
+The kinetic energy requires velocities measured in the inertial frame, so the
+position of the body's centre of mass is written in that frame. It is the
+position of the axle, $(x,0)$, plus a segment of length $l$ tilted by $\theta$
+from the vertical, whose components are $l\sin\theta$ along $x$ and
+$l\cos\theta$ along $z$:
+\begin{equation}
+  \pb = \begin{bmatrix} x + l\sin\theta \\ l\cos\theta \end{bmatrix}.
+  \label{eq:pb}
+\end{equation}
+The velocity is the time derivative of each component. Both $x$ and $\theta$
+are functions of time, while $l$ is constant:
+\begin{equation}
+  \vb = \dot{\bm p}_{\mathrm b}
+  = \begin{bmatrix}
+      \dfrac{\dd x}{\dd t} + \dfrac{\dd (l\sin\theta)}{\dd t} \\[10pt]
+      \dfrac{\dd (l\cos\theta)}{\dd t}
+    \end{bmatrix}.
+\end{equation}
+With the product rule, the term $\dot l\,\sin\theta$ vanishes because
+$\dot l=0$; the chain rule then gives the derivative of a function of $\theta$
+as its derivative with respect to $\theta$ times $\dot\theta$:
+\begin{align}
+  \frac{\dd (l\sin\theta)}{\dd t} &= \dot l\sin\theta + l\,\frac{\dd\sin\theta}{\dd\theta}\,\frac{\dd\theta}{\dd t} = l\cos\theta\,\dot\theta , \\
+  \frac{\dd (l\cos\theta)}{\dd t} &= \dot l\cos\theta + l\,\frac{\dd\cos\theta}{\dd\theta}\,\frac{\dd\theta}{\dd t} = -l\sin\theta\,\dot\theta .
+\end{align}
+Hence
+\begin{equation}
+  \vb = \begin{bmatrix} \dot x + l\cos\theta\,\dot\theta \\ -l\sin\theta\,\dot\theta \end{bmatrix}.
+  \label{eq:vb}
+\end{equation}
+
+\subsection{Kinetic energy}
+
+The kinetic energy of a rigid body is the sum of the translational energy of
+its centre of mass and the rotational energy about its centre of mass,
+$\frac12 m v^2 + \frac12 I\omega^2$. For the two bodies this gives four terms.
+
+\paragraph{Wheel, translation.}
+The centre of the wheel is the axle, at $(x,0)$, so its velocity is $\dot x$:
+\begin{equation}
+  T_{\mathrm{w,t}} = \frac12\mw\dot x^2 .
+\end{equation}
+
+\paragraph{Wheel, rotation.}
+The angular velocity of the wheel is $\dot\varphi$, which by
+\cref{eq:rolling-vel} equals $\dot x/r$:
+\begin{equation}
+  T_{\mathrm{w,r}} = \frac12\Iw\dot\varphi^2 = \frac12\Iw\left(\frac{\dot x}{r}\right)^2 .
+\end{equation}
+
+\paragraph{Body, translation.}
+The squared speed is the sum of the squares of the two components of
+\cref{eq:vb}:
+\begin{align}
+  v_{\mathrm b}^2 &= (\dot x + l\cos\theta\,\dot\theta)^2 + (-l\sin\theta\,\dot\theta)^2 \nonumber\\
+  &= \dot x^2 + 2l\cos\theta\,\dot x\dot\theta + l^2\cos^2\theta\,\dot\theta^2 + l^2\sin^2\theta\,\dot\theta^2 \nonumber\\
+  &= \dot x^2 + 2l\cos\theta\,\dot x\dot\theta + l^2\dot\theta^2\left(\cos^2\theta + \sin^2\theta\right) \nonumber\\
+  &= \dot x^2 + 2l\cos\theta\,\dot x\dot\theta + l^2\dot\theta^2 ,
+\end{align}
+where the last step uses $\cos^2\theta + \sin^2\theta = 1$. Therefore
+\begin{equation}
+  T_{\mathrm{b,t}} = \frac12\mb v_{\mathrm b}^2
+  = \frac12\mb\left(\dot x^2 + 2l\cos\theta\,\dot x\dot\theta + l^2\dot\theta^2\right).
+\end{equation}
+
+\paragraph{Body, rotation.}
+The orientation of the body is the angle $\theta$, measured from the vertical,
+which is a fixed direction; the angular velocity of the body is therefore
+$\dot\theta$:
+\begin{equation}
+  T_{\mathrm{b,r}} = \frac12\Ib\dot\theta^2 .
+\end{equation}
+
+\paragraph{Total kinetic energy.}
+Summing the four terms,
+\begin{equation}
+  T = \frac12\mw\dot x^2 + \frac12\Iw\left(\frac{\dot x}{r}\right)^2
+      + \frac12\mb\left(\dot x^2 + 2l\cos\theta\,\dot x\dot\theta + l^2\dot\theta^2\right)
+      + \frac12\Ib\dot\theta^2 .
+\end{equation}
+Expanding the body term,
+\begin{equation}
+  T = \frac12\mw\dot x^2 + \frac12\frac{\Iw}{r^2}\dot x^2 + \frac12\mb\dot x^2
+      + \mb l\cos\theta\,\dot x\dot\theta + \frac12\mb l^2\dot\theta^2 + \frac12\Ib\dot\theta^2 ,
+\end{equation}
+and collecting the terms in $\dot x^2$, $\dot x\dot\theta$ and $\dot\theta^2$:
+\begin{equation}
+  T = \frac12\dot x^2\left(\mw + \frac{\Iw}{r^2} + \mb\right)
+      + \mb l\cos\theta\,\dot x\dot\theta
+      + \frac12\dot\theta^2\left(\mb l^2 + \Ib\right).
+  \label{eq:T}
+\end{equation}
+For brevity, the three coefficients are denoted
+\begin{equation}
+  a = \mw + \frac{\Iw}{r^2} + \mb , \qquad
+  b = \mb l\cos\theta , \qquad
+  c = \mb l^2 + \Ib ,
+  \label{eq:abc}
+\end{equation}
+so that $T = \frac12 a\dot x^2 + b\,\dot x\dot\theta + \frac12 c\,\dot\theta^2$.
+
+\subsection{Potential energy}
+
+The reference height $z=0$ is the wheel axle. The centre of the wheel stays at
+this height on flat ground and does not contribute. The body's centre of mass
+is at height $l\cos\theta$, by \cref{eq:pb}:
+\begin{equation}
+  V = \mb g\,l\cos\theta .
+  \label{eq:V}
+\end{equation}
+
+\subsection{Generalised forces}
+
+The motor torque enters the equations of motion as a generalised force
+$Q_i$ for each coordinate, defined by the virtual work $\delta W$ done by the
+motor for virtual displacements $\delta x$ and $\delta\theta$:
+\begin{equation}
+  \delta W = Q_x\,\delta x + Q_\theta\,\delta\theta .
+  \label{eq:dW-def}
+\end{equation}
+The work of a torque is the torque multiplied by the rotation of the body it
+acts on. The motor applies $+\tau$ to the wheel, which rotates by
+$\delta\varphi$, and $-\tau$ to the body, which rotates by $\delta\theta$
+(\cref{fig:model-act}):
+\begin{equation}
+  \delta W = \tau\,\delta\varphi - \tau\,\delta\theta = \tau\,\delta(\varphi - \theta),
+\end{equation}
+i.e.\ the work depends on the rotation of the wheel relative to the body. The
+virtual rotation of the wheel follows from the rolling constraint
+\cref{eq:rolling}, with $\delta r = 0$:
+\begin{equation}
+  \delta x = \delta(\varphi r) = r\,\delta\varphi + \varphi\,\delta r = r\,\delta\varphi
+  \qquad\Longrightarrow\qquad
+  \delta\varphi = \frac{\delta x}{r}.
+\end{equation}
+Substituting,
+\begin{equation}
+  \delta W = \frac{\tau}{r}\,\delta x - \tau\,\delta\theta ,
+\end{equation}
+and comparing with \cref{eq:dW-def}:
+\begin{equation}
+  Q_x = \frac{\tau}{r}, \qquad Q_\theta = -\tau .
+  \label{eq:Q}
+\end{equation}
+$Q_x$ is a force (\si{N}) and $Q_\theta$ a torque (\si{N.m}), consistently with
+$x$ being a length and $\theta$ an angle. The contact forces between wheel and
+ground do no work, because the contact point does not slide; gravity is
+already included in $V$.
+
+\subsection{Euler--Lagrange equations}
+
+The Lagrangian is $L = T - V$. From \cref{eq:T,eq:V},
+\begin{equation}
+  L = \frac12 a\dot x^2 + \mb l\cos\theta\,\dot x\dot\theta + \frac12 c\,\dot\theta^2 - \mb g l\cos\theta ,
+  \label{eq:L}
+\end{equation}
+and for each coordinate $q_i\in\{x,\theta\}$ the Euler--Lagrange equation is
+\begin{equation}
+  \frac{\dd}{\dd t}\left(\frac{\partial L}{\partial\dot q_i}\right) - \frac{\partial L}{\partial q_i} = Q_i .
+  \label{eq:EL}
+\end{equation}
+
+\paragraph{Partial derivatives.}
+Each partial derivative is taken with respect to one variable, keeping all the
+others constant. With respect to the velocities:
+\begin{align}
+  \frac{\partial L}{\partial\dot x} &= a\dot x + \mb l\cos\theta\,\dot\theta , \label{eq:dLdxd}\\
+  \frac{\partial L}{\partial\dot\theta} &= \mb l\cos\theta\,\dot x + c\,\dot\theta . \label{eq:dLdthd}
+\end{align}
+With respect to the positions: $L$ does not contain $x$, and $\theta$ appears
+in the coupling term and in the potential energy, through $\cos\theta$:
+\begin{align}
+  \frac{\partial L}{\partial x} &= 0 , \\
+  \frac{\partial L}{\partial\theta} &= -\mb l\sin\theta\,\dot x\dot\theta + \mb g l\sin\theta .
+  \label{eq:dLdth}
+\end{align}
+
+\paragraph{Time derivatives.}
+The total time derivative follows the motion, so every quantity that depends
+on time ($x$, $\theta$, $\dot x$, $\dot\theta$) is differentiated; only the
+parameters are constant. In \cref{eq:dLdxd}, $a$ is constant, so
+$\frac{\dd}{\dd t}(a\dot x) = a\ddot x$; the second term is the product of the
+two functions of time $\cos\theta$ and $\dot\theta$, and
+$\frac{\dd}{\dd t}\cos\theta = -\sin\theta\,\dot\theta$:
+\begin{align}
+  \frac{\dd}{\dd t}\frac{\partial L}{\partial\dot x}
+  &= a\ddot x + \mb l\left(-\sin\theta\,\dot\theta\cdot\dot\theta + \cos\theta\,\ddot\theta\right) \nonumber\\
+  &= a\ddot x - \mb l\sin\theta\,\dot\theta^2 + \mb l\cos\theta\,\ddot\theta .
+\end{align}
+In the same way, from \cref{eq:dLdthd}:
+\begin{align}
+  \frac{\dd}{\dd t}\frac{\partial L}{\partial\dot\theta}
+  &= \mb l\left(-\sin\theta\,\dot\theta\,\dot x + \cos\theta\,\ddot x\right) + c\,\ddot\theta \nonumber\\
+  &= -\mb l\sin\theta\,\dot\theta\dot x + \mb l\cos\theta\,\ddot x + c\,\ddot\theta .
+\end{align}
+
+\paragraph{Equation of motion for $x$.}
+Substituting into \cref{eq:EL} with $Q_x = \tau/r$:
+\begin{equation}
+  a\ddot x - \mb l\sin\theta\,\dot\theta^2 + \mb l\cos\theta\,\ddot\theta - 0 = \frac{\tau}{r}.
+\end{equation}
+
+\paragraph{Equation of motion for $\theta$.}
+Substituting into \cref{eq:EL} with $Q_\theta = -\tau$, the minus sign in front
+of $\partial L/\partial\theta$ applies to both terms of \cref{eq:dLdth}:
+\begin{align}
+  -\mb l\sin\theta\,\dot\theta\dot x + \mb l\cos\theta\,\ddot x + c\,\ddot\theta
+  - \left(-\mb l\sin\theta\,\dot x\dot\theta + \mb g l\sin\theta\right) &= -\tau \nonumber\\
+  -\mb l\sin\theta\,\dot\theta\dot x + \mb l\cos\theta\,\ddot x + c\,\ddot\theta
+  + \mb l\sin\theta\,\dot x\dot\theta - \mb g l\sin\theta &= -\tau .
+\end{align}
+The first and fourth terms cancel, leaving
+\begin{equation}
+  \mb l\cos\theta\,\ddot x + c\,\ddot\theta - \mb g l\sin\theta = -\tau .
+\end{equation}
+
+\paragraph{Summary.}
+With $a$ and $c$ from \cref{eq:abc}, the equations of motion are
+\begin{align}
+  a\ddot x + \mb l\cos\theta\,\ddot\theta - \mb l\sin\theta\,\dot\theta^2 &= \frac{\tau}{r} , \label{eq:eom-x}\\
+  \mb l\cos\theta\,\ddot x + c\,\ddot\theta - \mb g l\sin\theta &= -\tau . \label{eq:eom-th}
+\end{align}
+
+\subsection{Matrix form}
+
+\Cref{eq:eom-x,eq:eom-th} are written in the form
+\begin{equation}
+  \M(\q)\,\qdd + \h(\q,\qd) = \B\,\tau ,
+  \label{eq:manipulator}
+\end{equation}
+where row 1 corresponds to the equation of $x$ and row 2 to the equation of
+$\theta$. In each equation, the coefficients of the accelerations $\ddot x$ and
+$\ddot\theta$ form the corresponding row of the mass matrix $\M$; the remaining
+terms on the left-hand side form the vector $\h$; the coefficients of $\tau$
+on the right-hand side form the vector $\B$:
+\begin{equation}
+  \underbrace{\begin{bmatrix}
+     \mw + \dfrac{\Iw}{r^2} + \mb & \mb l\cos\theta \\[8pt]
+     \mb l\cos\theta & \mb l^2 + \Ib
+  \end{bmatrix}}_{\M(\q)}
+  \begin{bmatrix} \ddot x \\ \ddot\theta \end{bmatrix}
+  +
+  \underbrace{\begin{bmatrix}
+     -\mb l\sin\theta\,\dot\theta^2 \\[4pt]
+     -\mb g l\sin\theta
+  \end{bmatrix}}_{\h(\q,\qd)}
+  =
+  \underbrace{\begin{bmatrix} 1/r \\[4pt] -1 \end{bmatrix}}_{\B}\tau .
+  \label{eq:result}
+\end{equation}
+
+The same mass matrix follows directly from the kinetic energy. Writing
+$T = \frac12\qd^{\mathsf T}\M\qd$ for a generic $2\times2$ matrix $\M$,
+\begin{equation}
+  \frac12\qd^{\mathsf T}\M\qd
+  = \frac12\left(M_{11}\dot x^2 + (M_{12}+M_{21})\,\dot x\dot\theta + M_{22}\dot\theta^2\right),
+\end{equation}
+and comparing with $T = \frac12 a\dot x^2 + b\,\dot x\dot\theta + \frac12 c\,\dot\theta^2$
+gives $M_{11} = a$, $M_{22} = c$ and, for a symmetric matrix,
+$M_{12} = M_{21} = b$, in agreement with \cref{eq:result}.
+
+\subsection{Properties of the model}
+
+\paragraph{Mass matrix.}
+$\M$ is symmetric, $\M^{\mathsf T} = \M$. Its diagonal entries $a$ and $c$
+are constant; only the off-diagonal entry $b = \mb l\cos\theta$ depends on the
+configuration. Its determinant,
+\begin{equation}
+  \det\M = ac - b^2
+  = \left(\mw + \frac{\Iw}{r^2}\right)\left(\mb l^2 + \Ib\right) + \mb\Ib + \mb^2 l^2\sin^2\theta ,
+\end{equation}
+is positive for every $\theta$, so $\M$ is always invertible.
+
+\paragraph{Equilibrium.}
+For the robot upright and at rest with no input ($\theta = 0$,
+$\dot x = \dot\theta = 0$, $\tau = 0$):
+\begin{equation}
+  h_1 = -\mb l\sin 0\cdot 0^2 = 0, \qquad
+  h_2 = -\mb g l\sin 0 = 0, \qquad
+  \B\tau = \bm 0 .
+\end{equation}
+\Cref{eq:manipulator} reduces to $\M\qdd = \bm 0$ and, since $\M$ is
+invertible, $\qdd = \bm 0$: the upright configuration at rest is an
+equilibrium.
+
+\paragraph{Stability of the equilibrium.}
+With the robot at rest, $\tau = 0$ and a small tilt $\theta > 0$,
+\cref{eq:manipulator} gives
+$\M\qdd = -\h = \begin{bmatrix} 0 & \mb g l\sin\theta\end{bmatrix}^{\mathsf T}$,
+hence
+\begin{equation}
+  \ddot\theta = \frac{a\,\mb g l\sin\theta}{\det\M} > 0 .
+\end{equation}
+The angular acceleration has the same sign as the tilt, so the tilt grows: the
+equilibrium is unstable. Consistently, the potential energy
+\cref{eq:V} is maximum at $\theta = 0$.
+
+\paragraph{Underactuation.}
+$\B = \begin{bmatrix} 1/r & -1\end{bmatrix}^{\mathsf T}$ is a single non-zero
+column, so $\operatorname{rank}\B = 1$, while the system has two degrees of
+freedom. The input $\tau$ always acts on both coordinates in the fixed ratio
+$Q_x : Q_\theta = 1/r : -1$, and $\ddot x$ and $\ddot\theta$ cannot be
+assigned independently: the system is underactuated.

@@ -1,0 +1,10 @@
+# Simulation environment (installed by environment/setup_wsl.sh)
+numpy
+scipy
+matplotlib
+jupyterlab
+sympy
+pytest
+mujoco
+# GPU (Linux / WSL2 only):  pip install -U "jax[cuda12]"
+jax

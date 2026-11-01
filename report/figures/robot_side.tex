@@ -1,0 +1,49 @@
+% Planar model, side view (robot seen from its right side)
+\begin{tikzpicture}[scale=1.0]
+  \def\th{18}   % drawn tilt angle, positive = top towards +x
+  \def\R{1.0}   % wheel radius
+  \def\L{2.0}   % axle -> body CoM
+  \def\X{4.2}   % drawn axle position
+
+  % ground
+  \fill[pattern=north east lines,pattern color=gray] (-1.0,-\R) rectangle (6.4,-\R-0.2);
+  \draw (-1.0,-\R) -- (6.4,-\R);
+
+  % world frame at axle height
+  \draw[->] (0,0) -- (1.2,0) node[below]{$x$};
+  \draw[->] (0,0) -- (0,1.2) node[left]{$z$};
+  \node[below left] at (0,0) {$O$};
+  \draw (-0.55,0.35) circle (0.12);
+  \draw (-0.63,0.27) -- (-0.47,0.43) (-0.63,0.43) -- (-0.47,0.27);
+  \node[left] at (-0.68,0.35) {$y$};
+
+  % position of the axle
+  \draw (0,-\R-0.3) -- (0,-\R-0.7) (\X,-\R-0.3) -- (\X,-\R-0.7);
+  \draw[<->] (0,-\R-0.5) -- node[below]{$x$} (\X,-\R-0.5);
+
+  % body
+  \begin{scope}[shift={(\X,0)},rotate=-\th]
+    \draw[fill=gray!10] (-0.9,-0.35) rectangle (0.9,3.5);
+    \draw[dashed,gray] (0,\L) -- (0,3.9);
+  \end{scope}
+  \draw[dashed,gray] (\X,0) -- (\X,3.9);
+  \draw[->] (\X,3.25) arc[start angle=90,end angle=90-\th,radius=3.25];
+  \node at ($(\X,0)+(90-\th/2:3.55)$) {$\theta$};
+
+  % wheel
+  \draw[fill=white] (\X,0) circle (\R);
+  \fill (\X,0) circle (1.5pt);
+  \draw (\X,0) -- ++(-125:\R);
+  \draw[dashed,gray] (\X,0) -- ++(-90:\R);
+  \draw[->] ($(\X,0)+(-90:0.6)$) arc[start angle=-90,end angle=-125,radius=0.6];
+  \node at ($(\X,0)+(-150:0.62)$) {$\varphi$};
+  \draw[<->] (\X,0) -- node[above=-1pt]{$r$} ++(165:\R);
+
+  % axle -> CoM
+  \begin{scope}[shift={(\X,0)},rotate=-\th]
+    \draw[thick] (0,0) -- (0,\L) node[pos=0.75,left]{$l$};
+    \fill (0,\L) circle (2.2pt);
+    \node[left=3pt,fill=gray!10,inner sep=1pt] at (0,\L+0.45) {$\pb$};
+  \end{scope}
+  \draw[->] ($(\X,0)+(90-\th:\L)$) -- ++(0,-1.0) node[right,fill=white,inner sep=1pt]{$\mb g$};
+\end{tikzpicture}

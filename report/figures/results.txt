@@ -1,0 +1,8 @@
+fall time (|theta| = 90 deg): 0.345 s
+wheel displacement at the fall: -5.55 cm
+theta at snapshots: t=0.00: 3.0 deg, t=0.15: 11.1 deg, t=0.25: 37.2 deg, t=0.30: 62.0 deg, t=0.35: 92.0 deg
+euler: max relative energy drift = 6.23e-03
+rk4: max relative energy drift = 7.63e-08
+euler: error dt=0.001 2.624e-03, dt=0.0005 1.310e-03, ratio 2.00
+rk4: error dt=0.02 6.268e-08, dt=0.01 3.978e-09, ratio 15.76
+max |p_x| (dL/dx_dot) along RK4 trajectory = 1.67e-08 kg m/s

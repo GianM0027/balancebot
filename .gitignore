@@ -1,0 +1,35 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.ipynb_checkpoints/
+.pytest_cache/
+
+# --- LaTeX build files (main.pdf is kept on purpose) ---
+report/*.aux
+report/*.bbl
+report/*.blg
+report/*.fdb_latexmk
+report/*.fls
+report/*.log
+report/*.out
+report/*.toc
+report/*.synctex.gz
+
+# --- Simulation outputs (figures used in the report and README are kept elsewhere) ---
+runs/
+
+# --- Firmware (PlatformIO) ---
+.pio/
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Personal handwritten notes (OneNote, binary) ---
+esercizi e calcoli/
