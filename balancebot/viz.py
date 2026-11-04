@@ -99,3 +99,26 @@ def _save(fig, path):
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         fig.savefig(path, dpi=150)
+
+
+def plot_control(res: dict, title: str = "", path: Optional[Path] = None,
+                 tau_max: Optional[float] = None):
+    """Plot theta, x and the applied torque against time."""
+    t, s, tau = res["t"], res["s"], res["tau"]
+    fig, ax = plt.subplots(3, 1, figsize=(8, 7), sharex=True)
+    ax[0].plot(t, np.degrees(s[:, 1]))
+    ax[0].set_ylabel(r"$\theta$ [deg]")
+    ax[1].plot(t, 100 * s[:, 0])
+    ax[1].set_ylabel(r"$x$ [cm]")
+    ax[2].plot(t, tau)
+    if tau_max is not None:
+        for v in (tau_max, -tau_max):
+            ax[2].axhline(v, color="k", ls="--", lw=0.8)
+    ax[2].set_ylabel(r"$\tau$ [N m]")
+    ax[2].set_xlabel("t [s]")
+    for a in ax:
+        a.grid(alpha=0.3)
+    fig.suptitle(title)
+    fig.tight_layout()
+    _save(fig, path)
+    return fig

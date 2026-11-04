@@ -23,4 +23,3 @@ class RobotParams:
 
     # --- environment ---
     g: float = 9.81        # [m/s^2]
-    

@@ -12,18 +12,23 @@ combines model-based control with a learned policy, robust to changes of the cen
 - Planar dynamic model derived with the Euler–Lagrange method, in the form
   `M(q) q̈ + h(q, q̇) = B τ`, and checked symbolically ([report](report/main.pdf)).
 - NumPy simulator: forward dynamics, explicit Euler and RK4 integrators.
-- Physics-based test suite (28 tests): mass matrix properties, equilibrium, agreement with the
+- Physics-based test suite: mass matrix properties, equilibrium, agreement with the
   symbolic model, integrator order, energy conservation.
 - First experiment: free fall with the motor off.
+- Linearisation about the upright equilibrium, eigenvalues and controllability.
+- PID on the tilt angle and LQR on the full state, tested on the nonlinear model: the PID keeps
+  the robot upright but lets it drift, the LQR also brings it back to the starting position.
 
-<p align="center"><img src="docs/media/free_fall.gif" width="520" alt="Free-fall simulation"></p>
+| PID on the tilt angle | LQR on the full state |
+|:---:|:---:|
+| <img src="docs/media/pid.gif" width="400" alt="PID"> | <img src="docs/media/lqr.gif" width="400" alt="LQR"> |
 
 ## Plan
 
 - [x] Planar dynamic model (Lagrange)
 - [x] Simulator and integrators, free-fall experiment
-- [ ] Linearisation and controllability
-- [ ] PID and LQR in simulation
+- [x] Linearisation and controllability
+- [x] PID and LQR in simulation
 - [ ] Motor model (torque limits, dead zone, delay)
 - [ ] MuJoCo model and cross-validation
 - [ ] Bench tests: IMU and encoder drivers, complementary and Kalman filters, motor identification

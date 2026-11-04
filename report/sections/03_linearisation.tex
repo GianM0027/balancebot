@@ -1,0 +1,202 @@
+\section{Linearisation about the upright equilibrium}\label{sec:lin}
+
+The equations of motion \cref{eq:eom-x,eq:eom-th} are nonlinear in $\theta$ and
+$\dot\theta$. Near the upright equilibrium they can be replaced by a linear
+time-invariant model
+\begin{equation}
+  \dot{\bm s} = \bm A\,\bm s + \bm B_{\mathrm{lin}}\,\tau ,
+  \qquad \bm s = \begin{bmatrix} x & \theta & \dot x & \dot\theta \end{bmatrix}^{\mathsf T},
+  \label{eq:lti}
+\end{equation}
+with constant matrices $\bm A\in\mathbb R^{4\times4}$ and
+$\bm B_{\mathrm{lin}}\in\mathbb R^{4\times1}$. A model of this form is
+introduced because its behaviour is fully characterised by the two matrices:
+stability follows from the eigenvalues of $\bm A$, controllability from a rank
+condition, and the standard methods of linear control design apply to it
+directly. None of these tools applies to the nonlinear model.
+
+\subsection{First-order approximation}
+
+The equilibrium is $\theta = 0$, $\dot x = \dot\theta = 0$, $\tau = 0$, for any
+$x$ (\cref{sec:model}). Near it $\theta$, $\dot x$, $\dot\theta$ and $\tau$ are
+small quantities, and each term of the equations is kept only up to first order
+in them. The trigonometric functions are replaced by their first-order Taylor
+expansion about $\theta_0 = 0$,
+\begin{equation}
+  f(\theta) \approx f(0) + f'(0)\,\theta ,
+\end{equation}
+which gives
+\begin{equation}
+  \sin\theta \approx \sin 0 + \cos 0\cdot\theta = \theta ,
+  \qquad
+  \cos\theta \approx \cos 0 - \sin 0\cdot\theta = 1 .
+\end{equation}
+Term by term:
+\begin{itemize}
+  \item $\mb l\cos\theta\,\ddot\theta \approx \mb l\,\ddot\theta$: the
+        correction to $\cos\theta \approx 1$ is of order $\theta^2$ and
+        multiplies $\ddot\theta$, so it is of third order;
+  \item $-\mb l\sin\theta\,\dot\theta^2 \approx -\mb l\,\theta\,\dot\theta^2$:
+        product of three small quantities, third order, neglected;
+  \item $-\mb g l\sin\theta \approx -\mb g l\,\theta$: first order, kept.
+\end{itemize}
+With $b_0 = \mb l$, the value of $b = \mb l\cos\theta$ at $\theta = 0$, the
+linearised equations of motion are
+\begin{equation}
+  \underbrace{\begin{bmatrix} a & b_0 \\ b_0 & c \end{bmatrix}}_{\M_0}
+  \begin{bmatrix} \ddot x \\ \ddot\theta \end{bmatrix}
+  + \begin{bmatrix} 0 \\ -\mb g l\,\theta \end{bmatrix}
+  = \begin{bmatrix} 1/r \\ -1 \end{bmatrix}\tau ,
+  \label{eq:lin-eom}
+\end{equation}
+with $a$ and $c$ from \cref{eq:abc}.
+
+\subsection{State-space matrices}
+
+Moving the gravity term to the right-hand side of \cref{eq:lin-eom},
+\begin{equation}
+  \M_0 \begin{bmatrix} \ddot x \\ \ddot\theta \end{bmatrix}
+  = \begin{bmatrix} \tau/r \\ -\tau + \mb g l\,\theta \end{bmatrix} .
+\end{equation}
+The inverse of $\M_0$ is
+\begin{equation}
+  \M_0^{-1} = \frac{1}{D}\begin{bmatrix} c & -b_0 \\ -b_0 & a \end{bmatrix},
+  \qquad D = \det\M_0 = ac - b_0^2 > 0 ,
+\end{equation}
+so that
+\begin{align}
+  \ddot x &= \frac{1}{D}\left[c\,\frac{\tau}{r} - b_0\left(-\tau + \mb g l\,\theta\right)\right]
+           = \frac{1}{D}\left[-b_0\,\mb g l\,\theta + \left(\frac{c}{r} + b_0\right)\tau\right],
+  \label{eq:lin-xdd}\\
+  \ddot\theta &= \frac{1}{D}\left[-b_0\,\frac{\tau}{r} + a\left(-\tau + \mb g l\,\theta\right)\right]
+           = \frac{1}{D}\left[a\,\mb g l\,\theta - \left(a + \frac{b_0}{r}\right)\tau\right].
+  \label{eq:lin-thdd}
+\end{align}
+The first two components of $\dot{\bm s}$ are $\dot x$ and $\dot\theta$, the
+last two are \cref{eq:lin-xdd,eq:lin-thdd}. Writing $\alpha = -b_0\mb g l/D$
+and $\beta = a\mb g l/D$,
+\begin{equation}
+  \bm A = \begin{bmatrix}
+    0 & 0 & 1 & 0 \\
+    0 & 0 & 0 & 1 \\
+    0 & \alpha & 0 & 0 \\
+    0 & \beta & 0 & 0
+  \end{bmatrix},
+  \qquad
+  \bm B_{\mathrm{lin}} = \begin{bmatrix} 0 \\ 0 \\ b_3 \\ b_4 \end{bmatrix}
+  = \begin{bmatrix} 0 \\ 0 \\ (c/r + b_0)/D \\ -(a + b_0/r)/D \end{bmatrix} .
+  \label{eq:AB}
+\end{equation}
+With the parameters of \cref{tab:nominal}: $\alpha = \SI{-10.34}{s^{-2}}$,
+$\beta = \SI{176.48}{s^{-2}}$, $b_3 = \SI{123.50}{kg^{-1}.m^{-1}}$,
+$b_4 = \SI{-1309.37}{kg^{-1}.m^{-2}}$. The same matrices were obtained
+numerically, by central finite differences of the nonlinear $\bm f(\bm s,\tau)$
+of \cref{eq:forward} about the equilibrium with step \num{1e-6}; the largest
+difference between the two is \num{2.2e-10}.
+
+\subsection{Eigenvalues}
+
+The eigenvalues of $\bm A$ are the roots of $\det(\lambda\bm I - \bm A) = 0$:
+\begin{equation}
+  \det\begin{bmatrix}
+    \lambda & 0 & -1 & 0 \\
+    0 & \lambda & 0 & -1 \\
+    0 & -\alpha & \lambda & 0 \\
+    0 & -\beta & 0 & \lambda
+  \end{bmatrix} .
+\end{equation}
+The first column has a single non-zero entry, so expanding along it,
+\begin{equation}
+  \det(\lambda\bm I - \bm A)
+  = \lambda \det\begin{bmatrix}
+    \lambda & 0 & -1 \\
+    -\alpha & \lambda & 0 \\
+    -\beta & 0 & \lambda
+  \end{bmatrix}
+  = \lambda\left[\lambda\cdot\lambda^2 - 1\cdot\left(0 + \lambda\beta\right)\right]
+  = \lambda^2\left(\lambda^2 - \beta\right) .
+\end{equation}
+The eigenvalues are therefore
+\begin{equation}
+  \lambda_{1,2} = 0, \qquad \lambda_{3,4} = \pm\sqrt{\beta} = \pm\sqrt{\frac{a\,\mb g l}{D}} = \pm\SI{13.28}{s^{-1}} .
+\end{equation}
+The double zero belongs to the position: with $\tau = 0$ nothing acts on $x$
+other than the coupling with $\theta$, and the robot has no preferred position.
+The positive eigenvalue makes the equilibrium unstable: a deviation in
+$\theta$ grows as $e^{\sqrt\beta\,t}$, by a factor $e$ every
+$1/\sqrt\beta = \SI{75}{ms}$. The coefficient $\alpha$ does not affect the
+eigenvalues: the motion of the wheels does not act back on $\theta$.
+
+\paragraph{Comparison with the nonlinear model.} With $\tau = 0$,
+\cref{eq:lin-thdd} reduces to $\ddot\theta = \beta\,\theta$, whose general
+solution is $\theta(t) = C_1 e^{\sqrt\beta t} + C_2 e^{-\sqrt\beta t}$. From rest,
+$\theta(0) = \theta_0$ and $\dot\theta(0) = 0$ give $C_1 = C_2 = \theta_0/2$,
+hence
+\begin{equation}
+  \theta(t) = \theta_0\cosh\!\left(\sqrt\beta\, t\right) .
+\end{equation}
+\Cref{tab:lin-vs-nl} compares this solution with the nonlinear simulation of
+\cref{sec:sim} (RK4, $\Delta t = \SI{1}{ms}$), both from $\theta_0 = 3^\circ$.
+
+\begin{table}[h]
+\centering
+\caption{Free fall from $\theta_0 = 3^\circ$: linearised and nonlinear model.}
+\label{tab:lin-vs-nl}
+\begin{tabular}{@{}ccc@{}}
+\toprule
+$t$ [s] & $\theta$, linear [deg] & $\theta$, nonlinear [deg] \\
+\midrule
+0.05 & 3.7  & 3.7  \\
+0.10 & 6.1  & 6.0  \\
+0.15 & 11.2 & 11.1 \\
+0.20 & 21.5 & 20.7 \\
+0.25 & 41.6 & 37.2 \\
+0.30 & 80.7 & 62.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Limits of the linear model.} The two models agree within
+$1^\circ$ up to about $20^\circ$ and diverge beyond. The linear model uses
+$\theta$ in place of $\sin\theta$; since $\theta > \sin\theta$ for
+$\theta > 0$, it overestimates the gravitational torque and predicts a faster
+fall. The relative error of the approximation is $1\%$ at $14^\circ$ and
+$4.7\%$ at $30^\circ$, and the neglected terms (such as
+$\theta\dot\theta^2$) also grow with the speed of the motion. The linear model
+is therefore a valid description only in a neighbourhood of the equilibrium,
+and results obtained from it must be checked on the nonlinear model.
+
+\subsection{Controllability}
+
+The system \cref{eq:lti} is controllable, i.e.\ the single input $\tau$ can
+bring the state from any initial value to any final value in finite time, if
+and only if the controllability matrix
+\begin{equation}
+  \bm C = \begin{bmatrix} \bm B_{\mathrm{lin}} & \bm A\bm B_{\mathrm{lin}} & \bm A^2\bm B_{\mathrm{lin}} & \bm A^3\bm B_{\mathrm{lin}} \end{bmatrix}
+\end{equation}
+has rank 4. From \cref{eq:AB},
+\begin{equation}
+  \bm B_{\mathrm{lin}} = \begin{bmatrix} 0 \\ 0 \\ b_3 \\ b_4 \end{bmatrix},\quad
+  \bm A\bm B_{\mathrm{lin}} = \begin{bmatrix} b_3 \\ b_4 \\ 0 \\ 0 \end{bmatrix},\quad
+  \bm A^2\bm B_{\mathrm{lin}} = \begin{bmatrix} 0 \\ 0 \\ \alpha b_4 \\ \beta b_4 \end{bmatrix},\quad
+  \bm A^3\bm B_{\mathrm{lin}} = \begin{bmatrix} \alpha b_4 \\ \beta b_4 \\ 0 \\ 0 \end{bmatrix}.
+\end{equation}
+Reordering the columns as (2, 4, 1, 3), which changes at most the sign of the
+determinant, gives a block-diagonal matrix with two equal blocks
+\begin{equation}
+  \bm G = \begin{bmatrix} b_3 & \alpha b_4 \\ b_4 & \beta b_4 \end{bmatrix},
+  \qquad |\det\bm C| = (\det\bm G)^2 ,
+\end{equation}
+with
+\begin{equation}
+\begin{aligned}
+  \det\bm G &= b_4\left(\beta b_3 - \alpha b_4\right)
+  = b_4\,\frac{\mb g l}{D^2}\left[a\left(\frac{c}{r} + b_0\right) - b_0\left(a + \frac{b_0}{r}\right)\right] \\
+  &= b_4\,\frac{\mb g l}{D^2}\,\frac{ac - b_0^2}{r}
+  = b_4\,\frac{\mb g l}{r D} .
+\end{aligned}
+\end{equation}
+Since $b_4 \neq 0$ and $D > 0$, $\det\bm C \neq 0$ for every value of the
+parameters: the linearised system is controllable, although it has two degrees
+of freedom and a single input. The rank was also confirmed numerically
+(\texttt{numpy.linalg.matrix\_rank}) with the parameters of \cref{tab:nominal}.
