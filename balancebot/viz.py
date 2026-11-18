@@ -10,7 +10,16 @@ from .params import RobotParams
 
 
 def plot_states(res: dict, title: str = "", path: Optional[Path] = None):
-    """Plot x, theta and their velocities against time."""
+    """Plot x, theta and their velocities against time.
+
+    Args:
+        res:   simulation result from simulate() (uses "t" and "s").
+        title: figure title.
+        path:  file to save the figure to; None = do not save.
+
+    Returns:
+        The matplotlib figure.
+    """
     t, s = res["t"], res["s"]
     fig, ax = plt.subplots(2, 2, figsize=(10, 6), sharex=True)
     labels = [r"$x$ [m]", r"$\theta$ [deg]", r"$\dot x$ [m/s]", r"$\dot\theta$ [deg/s]"]
@@ -51,7 +60,17 @@ def animate(res: dict, p: RobotParams, path: Optional[Path] = None, fps: int = 3
             body_height: Optional[float] = None, body_width: Optional[float] = None):
     """2-D side-view animation. Saved as .gif or .mp4 (needs ffmpeg) if path is given.
 
-    speed: playback speed (0.25 = four times slower than real time).
+    Args:
+        res:         simulation result from simulate() (uses "t" and "s").
+        p:           robot parameters (wheel radius, CoM distance).
+        path:        output file, .gif or .mp4; None = do not save.
+        fps:         frames per second of the animation.
+        speed:       playback speed (0.25 = four times slower than real time).
+        body_height: height of the drawn body [m]; None = 2.6 * l.
+        body_width:  width of the drawn body [m]; None = 0.4 * body_height.
+
+    Returns:
+        The matplotlib FuncAnimation.
     """
     t, s = res["t"], res["s"]
     h = body_height or 2.6 * p.l
@@ -76,6 +95,11 @@ def animate(res: dict, p: RobotParams, path: Optional[Path] = None, fps: int = 3
     label = ax.text(0.02, 0.92, "", transform=ax.transAxes)
 
     def update(k):
+        """Draw frame k.
+
+        Args:
+            k: index of the simulation sample shown in this frame.
+        """
         x, th = s[k, 0], s[k, 1]
         phi = x / p.r
         body.set_transform(transforms.Affine2D().rotate(-th).translate(x, 0) + ax.transData)
@@ -95,6 +119,12 @@ def animate(res: dict, p: RobotParams, path: Optional[Path] = None, fps: int = 3
 
 
 def _save(fig, path):
+    """Save a figure, creating the folder if needed.
+
+    Args:
+        fig:  matplotlib figure.
+        path: output file; None = do nothing.
+    """
     if path is not None:
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -103,7 +133,17 @@ def _save(fig, path):
 
 def plot_control(res: dict, title: str = "", path: Optional[Path] = None,
                  tau_max: Optional[float] = None):
-    """Plot theta, x and the applied torque against time."""
+    """Plot theta, x and the applied torque against time.
+
+    Args:
+        res:     simulation result from simulate() (uses "t", "s" and "tau").
+        title:   figure title.
+        path:    file to save the figure to; None = do not save.
+        tau_max: torque limit [N m] drawn as dashed lines; None = not drawn.
+
+    Returns:
+        The matplotlib figure.
+    """
     t, s, tau = res["t"], res["s"], res["tau"]
     fig, ax = plt.subplots(3, 1, figsize=(8, 7), sharex=True)
     ax[0].plot(t, np.degrees(s[:, 1]))

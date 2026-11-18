@@ -105,8 +105,7 @@ derived from a property of the model:
 
 \subsection{Free fall with the motor off}
 
-\paragraph{Set-up.} The parameters are nominal estimates (\cref{tab:nominal}),
-to be replaced by measured values. The robot starts at rest with
+\paragraph{Set-up.} The parameters are nominal estimates (\cref{tab:nominal}). The robot starts at rest with
 $\theta_0 = 3^\circ$ and $\tau = 0$, and is integrated with
 $\Delta t = \SI{5}{ms}$. The simulation stops at the first step with
 $|\theta| \ge 90^\circ$, when the body reaches the ground: the model has no
@@ -121,23 +120,23 @@ physical.
 \toprule
 Parameter & Value & Basis of the estimate \\
 \midrule
-$\mb$ & \SI{0.55}{kg} & frame, motors, battery, electronics \\
-$\Ib$ & \SI{1.7e-3}{kg.m^2} & box \SI{0.18}{m} $\times$ \SI{0.06}{m}, $\mb(h^2+d^2)/12$ \\
-$l$   & \SI{0.07}{m} & \\
-$\mw$ & \SI{0.06}{kg} & two wheels \\
-$r$   & \SI{0.0325}{m} & \SI{65}{mm} wheels \\
-$\Iw$ & \SI{5.0e-5}{kg.m^2} & $\approx 0.75\,\mw r^2$ \\
+$\mb$ & \SI{0.69}{kg} & frame \SI{160}{g}, motors \SI{190}{g}, battery \SI{250}{g}, electronics \SI{90}{g} \\
+$\Ib$ & \SI{3.8e-3}{kg.m^2} & battery and motors as point masses, frame as a \SI{0.20}{m} rod \\
+$l$   & \SI{0.095}{m} & battery mounted at the top, \SI{0.17}{m} above the axle \\
+$\mw$ & \SI{0.08}{kg} & two wheels: printed rim and O-ring \\
+$r$   & \SI{0.046}{m} & O-ring $90\times80\times5$\,mm on a \SI{82.5}{mm} groove \\
+$\Iw$ & \SI{1.3e-4}{kg.m^2} & $\approx 0.75\,\mw r^2$ \\
 $g$   & \SI{9.81}{m/s^2} & \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\paragraph{Results.} The body reaches the horizontal after \SI{0.345}{s}
+\paragraph{Results.} The body reaches the horizontal after \SI{0.400}{s}
 (\cref{fig:frames,fig:states}). The tilt grows slowly at first and then
-rapidly: $3^\circ$ at $t = 0$, $11^\circ$ at \SI{0.15}{s}, $37^\circ$ at
-\SI{0.25}{s}, $62^\circ$ at \SI{0.30}{s}, as expected from the unstable
+rapidly: $3^\circ$ at $t = 0$, $9^\circ$ at \SI{0.15}{s}, $25^\circ$ at
+\SI{0.25}{s}, $41^\circ$ at \SI{0.30}{s}, as expected from the unstable
 equilibrium of \cref{sec:model}. While the body falls forward, the wheels roll
-backwards, by \SI{5.55}{cm} in total; their speed first grows and then returns
+backwards, by \SI{7.46}{cm} in total; their speed first grows and then returns
 to zero as the body approaches the horizontal.
 
 \begin{figure}[h]
@@ -169,11 +168,11 @@ is conserved. Starting from rest, $p_x = 0$ at all times, hence
 A forward rotation of the body ($\dot\theta > 0$) therefore drives the wheels
 backwards, through the coupling term $b = \mb l\cos\theta$, and the effect
 vanishes at $\theta = 90^\circ$, where $\cos\theta = 0$. Along the simulated
-trajectory $|p_x|$ stays below \SI{1.7e-8}{kg.m/s}.
+trajectory $|p_x|$ stays below \SI{1.4e-8}{kg.m/s}.
 
 \paragraph{Energy.} \Cref{fig:energy} shows the relative drift of the total
 energy for the two integrators with the same step. The maximum drift is
-\num{6.2e-3} with explicit Euler and \num{7.6e-8} with RK4. The Euler error
+\num{5.4e-3} with explicit Euler and \num{4.6e-8} with RK4. The Euler error
 grows as the motion accelerates; RK4 conserves the energy to within the
 accuracy required by the tests, and is the default integrator of the simulator.
 

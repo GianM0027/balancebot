@@ -11,13 +11,14 @@ combines model-based control with a learned policy, robust to changes of the cen
 
 - Planar dynamic model derived with the Euler–Lagrange method, in the form
   `M(q) q̈ + h(q, q̇) = B τ`, and checked symbolically ([report](report/main.pdf)).
-- NumPy simulator: forward dynamics, explicit Euler and RK4 integrators.
-- Physics-based test suite: mass matrix properties, equilibrium, agreement with the
-  symbolic model, integrator order, energy conservation.
-- First experiment: free fall with the motor off.
+- NumPy simulator (explicit Euler, RK4) with a physics-based test suite.
 - Linearisation about the upright equilibrium, eigenvalues and controllability.
-- PID on the tilt angle and LQR on the full state, tested on the nonlinear model: the PID keeps
-  the robot upright but lets it drift, the LQR also brings it back to the starting position.
+- PID on the tilt angle and LQR on the full state: the PID keeps the robot upright but lets it
+  drift, the LQR also brings it back to the starting position.
+- DC motor model from the datasheet (back-EMF, battery limit, dead zone): both controllers
+  recover from up to 34–40° depending on the battery voltage.
+- Sensor models (MPU-6050, encoders) with noise and gyro bias measured on the real IMU;
+  complementary filter: the LQR balances the robot using only the simulated sensors.
 
 | PID on the tilt angle | LQR on the full state |
 |:---:|:---:|
@@ -29,10 +30,13 @@ combines model-based control with a learned policy, robust to changes of the cen
 - [x] Simulator and integrators, free-fall experiment
 - [x] Linearisation and controllability
 - [x] PID and LQR in simulation
-- [ ] Motor model (torque limits, dead zone, delay)
+- [x] Motor model (torque–speed, battery limit, dead zone)
+- [x] Sensor models, IMU noise and bias measured, complementary filter
+- [ ] Firmware on the ESP32: IMU calibration and filter, encoders, motor driver
+- [ ] Bench tests: motor identification, encoder check
+- [ ] Assembly, LQR on the real robot
+- [ ] Kalman filter
 - [ ] MuJoCo model and cross-validation
-- [ ] Bench tests: IMU and encoder drivers, complementary and Kalman filters, motor identification
-- [ ] 3D-printed frame, assembly, LQR on the real robot
 - [ ] Steering (differential drive)
 - [ ] Learned controller: PPO, domain randomisation, adaptation to centre-of-mass changes
 

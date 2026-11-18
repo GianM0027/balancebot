@@ -13,7 +13,15 @@ import scipy
 
 
 def saturate(tau: float, tau_max: Optional[float]) -> float:
-    """Clip tau to [-tau_max, tau_max] (no limit if tau_max is None)."""
+    """Clip tau to [-tau_max, tau_max] (no limit if tau_max is None).
+
+    Args:
+        tau:     torque [N m].
+        tau_max: limit [N m], or None.
+
+    Returns:
+        Clipped torque [N m] as a float.
+    """
     if tau_max is None:
         return float(tau)
     return float(np.clip(tau, -tau_max, tau_max))
@@ -138,3 +146,85 @@ class LQR:
             tau = float(np.clip(tau, -self.tau_max, self.tau_max))
 
         return tau
+
+
+# ======================================================================== motor interface
+class VoltageCommand:
+    """Turn a torque controller into a voltage controller for the real motors.
+
+    The wrapped controller computes the desired total torque; the inverse motor
+    model (back-EMF and dead-zone compensation) gives the voltage to apply.
+    The torque actually produced is limited by the battery voltage: near the
+    no-load speed the motors cannot deliver the requested torque.
+    Use with simulate(..., motor=m).
+    """
+
+    def __init__(self, torque_controller, p, m):
+        """
+        Args:
+            torque_controller: controller (t, s) -> tau, e.g. a PID or LQR instance.
+            p:                 robot parameters.
+            m:                 motor parameters.
+        """
+        self.ctrl, self.p, self.m = torque_controller, p, m
+
+    def reset(self) -> None:
+        if hasattr(self.ctrl, "reset"):
+            self.ctrl.reset()
+
+    def __call__(self, t: float, s: np.ndarray) -> float:
+        """Compute the motor voltage for the current state.
+
+        Args:
+            t: current time [s], passed to the wrapped controller.
+            s: state [x, theta, x_dot, theta_dot] seen by the controller.
+
+        Returns:
+            Command voltage [V].
+        """
+        from .motor import voltage_for_torque
+        return voltage_for_torque(self.ctrl(t, s), s, self.p, self.m)
+
+
+# ======================================================================== state estimation
+class WithEstimator:
+    """Run a controller on the ESTIMATED state instead of the true one.
+
+    At every call: generate the sensor readings from the true state (the
+    simulator passes it), update the estimator, call the wrapped controller with
+    the estimate. The accelerometer needs s_dot, computed with the command of the
+    previous step (the torque applied during the last step).
+    The estimates are logged in self.log for plotting.
+    """
+
+    def __init__(self, controller, sensors, estimator, p, motor=None):
+        """
+        Args:
+            controller: controller (t, s) -> command, run on the estimated state.
+            sensors:    Sensors instance that generates the readings.
+            estimator:  StateEstimator (or any object with the same update method).
+            p:          robot parameters.
+            motor:      motor parameters if the command is a voltage, None if it is a torque.
+        """
+        self.ctrl, self.sensors, self.est, self.p, self.motor = controller, sensors, estimator, p, motor
+        self.last_cmd = 0.0
+        self.log = []
+
+    def __call__(self, t: float, s: np.ndarray) -> float:
+        """Read the sensors, update the estimate, run the controller on it.
+
+        Args:
+            t: current time [s].
+            s: TRUE state, used only to generate the sensor readings.
+
+        Returns:
+            Command of the wrapped controller (torque [N m] or voltage [V]).
+        """
+        from . import dynamics, motor as motor_model
+        tau = self.last_cmd if self.motor is None else motor_model.torque(self.last_cmd, s, self.p, self.motor)
+        s_dot = dynamics.forward_dynamics(s, tau, self.p)
+        gyro, acc_fwd, acc_up = self.sensors.imu(s, s_dot)
+        s_hat = self.est.update(gyro, acc_fwd, acc_up, self.sensors.encoder(s))
+        self.log.append(s_hat)
+        self.last_cmd = float(self.ctrl(t, s_hat))
+        return self.last_cmd

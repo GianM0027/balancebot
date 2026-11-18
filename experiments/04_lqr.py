@@ -49,6 +49,12 @@ viz.animate(res, p, path=OUT / "lqr.gif")
 
 # ---------------------------------------------------------------- 2. region of attraction
 def recovers(theta0: float, tau_max) -> bool:
+    """True if the LQR brings the robot back upright from the initial tilt theta0.
+
+    Args:
+        theta0:  initial tilt [rad], robot at rest.
+        tau_max: torque limit [N m], or None for no limit.
+    """
     ctrl = LQR(A, B, Q, R, tau_max=tau_max)
     r = simulate(p, [0.0, theta0, 0.0, 0.0], T_FINAL, DT, controller=ctrl, stop=fallen)
     return r["t"][-1] >= T_FINAL - DT / 2 and abs(r["s"][-1, 1]) < np.radians(1)

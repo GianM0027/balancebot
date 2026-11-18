@@ -1,0 +1,23 @@
+{
+    "type": "filament",
+    "name": "Robot PLA - sporgenze",
+    "inherits": "Generic PLA @BBL A1M",
+    "from": "User",
+    "is_custom_defined": "0",
+    "version": "2.0.0.0",
+    "filament_settings_id": [
+        "Robot PLA - sporgenze"
+    ],
+    "overhang_fan_speed": [
+        "100"
+    ],
+    "slow_down_layer_time": [
+        "10"
+    ],
+    "nozzle_temperature": [
+        "210"
+    ],
+    "nozzle_temperature_initial_layer": [
+        "215"
+    ]
+}

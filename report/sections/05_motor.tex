@@ -1,0 +1,147 @@
+\section{Motor model}\label{sec:motor}
+
+In \cref{sec:control} the controllers impose the torque directly. The robot
+has two brushed DC motors with a gearbox, driven by a voltage $V$ through an
+H-bridge; the torque they produce depends on $V$ and on the speed of the
+wheel. This section derives the model used in the simulation.
+
+\subsection{Datasheet values}
+
+One motor, rated voltage \SI{12}{V}, gear ratio 21.3:1 (\cref{tab:motor}).
+
+\begin{table}[h]
+\centering
+\caption{Datasheet values of one motor (output shaft).}
+\label{tab:motor}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Quantity & Value & SI \\
+\midrule
+Rated voltage $V_{\mathrm{nom}}$ & \SI{12}{V} & \\
+No-load speed $\omega_0$ & \SI{280}{rpm} & \SI{29.32}{rad/s} \\
+No-load current & \SI{60}{mA} & \\
+Stall torque $\tau_s$ & \SI{1.7}{kg.cm} & \SI{0.1667}{N.m} \\
+Stall current $i_s$ & \SI{1.3}{A} & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Equations}
+
+\paragraph{Electrical equation.} The winding has resistance $R_m$ and
+inductance $L_m$. When the rotor turns, it generates a back electromotive
+force proportional to its speed, which opposes the applied voltage. Referring
+all quantities to the output shaft of the gearbox, with $\omega_{\mathrm{rel}}$
+the speed of the output shaft relative to the motor housing, Kirchhoff's
+voltage law for the winding gives
+\begin{equation}
+  V = R_m\,i + L_m\frac{\dd i}{\dd t} + K_e\,\omega_{\mathrm{rel}} .
+\end{equation}
+The electrical time constant $L_m/R_m$ of motors of this size is of the order
+of \SI{1}{ms}, much shorter than the time scale of the robot
+($1/\sqrt\beta = \SI{87}{ms}$, \cref{sec:lin}); the inductive term is
+neglected, and
+\begin{equation}
+  i = \frac{V - K_e\,\omega_{\mathrm{rel}}}{R_m} .
+\end{equation}
+
+\paragraph{Torque.} The torque at the output shaft is proportional to the
+current, $\tau_1 = K_t\,i$, hence
+\begin{equation}
+  \tau_1 = \frac{K_t}{R_m}\,V - \frac{K_t K_e}{R_m}\,\omega_{\mathrm{rel}} .
+  \label{eq:motor-K}
+\end{equation}
+
+\paragraph{Relative speed.} The housing of the motor is fixed to the body,
+which rotates with $\theta$; the motor drives the wheel relative to the body.
+Using the rolling constraint $x = r\varphi$,
+\begin{equation}
+  \omega_{\mathrm{rel}} = \dot\varphi - \dot\theta = \frac{\dot x}{r} - \dot\theta ,
+\end{equation}
+the same combination that appears in the virtual work of the motor,
+$\delta W = \tau(\delta\varphi - \delta\theta)$ (\cref{eq:Q}).
+
+\paragraph{Constants from the datasheet.} At stall ($\omega_{\mathrm{rel}} = 0$,
+$V = V_{\mathrm{nom}}$) the current is $i_s = V_{\mathrm{nom}}/R_m$ and the
+torque is $\tau_s = K_t i_s$:
+\begin{equation}
+  R_m = \frac{V_{\mathrm{nom}}}{i_s} = \SI{9.23}{\ohm} ,
+  \qquad K_t = \frac{\tau_s}{i_s} = \SI{0.128}{N.m/A} .
+\end{equation}
+At no load the torque, and so the current, is approximately zero (the
+no-load current is 4.6\% of $i_s$ and is neglected), so
+$V_{\mathrm{nom}} = K_e\,\omega_0$:
+\begin{equation}
+  K_e = \frac{V_{\mathrm{nom}}}{\omega_0} = \SI{0.409}{V.s/rad} .
+\end{equation}
+For a lossless motor and gearbox $K_t = K_e$ in SI units; here
+$K_t/K_e = 0.31$, the difference collecting the losses of the gearbox and the
+approximations of the datasheet. Substituting the three constants in
+\cref{eq:motor-K},
+\begin{equation}
+  \frac{K_t}{R_m} = \frac{\tau_s}{V_{\mathrm{nom}}} ,
+  \qquad \frac{K_t K_e}{R_m} = \frac{\tau_s}{i_s}\,\frac{V_{\mathrm{nom}}}{\omega_0}\,\frac{i_s}{V_{\mathrm{nom}}}
+  = \frac{\tau_s}{\omega_0} ,
+\end{equation}
+and the torque of one motor is written with datasheet quantities only:
+\begin{equation}
+  \tau_1 = \tau_s\frac{V}{V_{\mathrm{nom}}} - \frac{\tau_s}{\omega_0}\left(\frac{\dot x}{r} - \dot\theta\right) .
+  \label{eq:motor}
+\end{equation}
+The torque decreases linearly with the relative speed and is zero at
+$\omega_{\mathrm{rel}} = \omega_0\,V/V_{\mathrm{nom}}$. With $V = 0$ (terminals
+shorted by the driver) the second term brakes the wheel. The same voltage is
+applied to both motors, so the total torque of \cref{sec:model} is
+$\tau = 2\tau_1$.
+
+\paragraph{Limits.} The voltage is limited by the battery,
+$|V| \le V_b$, with $V_b$ between \SI{10.8}{V} (discharged) and \SI{12.6}{V}
+(charged), \SI{11.1}{V} nominal. Below a threshold voltage the static friction
+of the gearbox keeps the motor still; the threshold is estimated from the ratio
+of no-load to stall current, $V_d = (0.06/1.3)\,V_{\mathrm{nom}} \approx \SI{0.5}{V}$,
+and the voltage that drives the motor is
+\begin{equation}
+  V_{\mathrm{eff}} = \operatorname{sign}(V)\,\max\left(|V| - V_d,\ 0\right) ,
+\end{equation}
+which replaces $V$ in \cref{eq:motor}. At a given speed the available torque is
+therefore bounded by the values of \cref{eq:motor} at $V = \pm V_b$. The maximum
+speed of the robot on flat ground is $\omega_0 r = \SI{1.35}{m/s}$.
+
+\subsection{Use in the simulation}
+
+The controllers of \cref{sec:control} still compute a torque $\tau$. The
+voltage that produces it at the current speed is obtained by inverting
+\cref{eq:motor} and adding the dead-zone threshold,
+\begin{equation}
+  V = V_{\mathrm{nom}}\left(\frac{\tau}{2\tau_s} + \frac{\omega_{\mathrm{rel}}}{\omega_0}\right)
+      + \operatorname{sign}(V)\,V_d ,
+\end{equation}
+limited to $\pm V_b$. The voltage is held constant during each step, while the
+torque is recomputed from \cref{eq:motor} at every evaluation of the
+dynamics inside the step, since it depends on the speed.
+
+\subsection{Results}
+
+From rest with $\theta_0 = 10^\circ$ and $V_b = \SI{11.1}{V}$, both controllers
+balance the robot with the motor model. The PID uses at most \SI{5.6}{V} and
+\SI{0.42}{A} per motor, the LQR \SI{6.2}{V} and \SI{0.61}{A}; the requested
+torque stays at least \SI{0.14}{N.m} inside the available range.
+
+The largest initial tilt from which each controller recovers (robot at rest,
+upright within $1^\circ$ after \SI{5}{s}, tilts tested in steps of $2^\circ$)
+is given in \cref{tab:roa} for several battery voltages. Without the motor
+model, the same LQR recovers from up to $89^\circ$.
+
+\begin{table}[h]
+\centering
+\caption{Largest recoverable initial tilt with the motor model.}
+\label{tab:roa}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+$V_b$ [V] & 10.8 & 11.1 & 12.0 & 12.6 \\
+\midrule
+PID & $34^\circ$ & $34^\circ$ & $38^\circ$ & $40^\circ$ \\
+LQR & $34^\circ$ & $34^\circ$ & $38^\circ$ & $40^\circ$ \\
+\bottomrule
+\end{tabular}
+\end{table}

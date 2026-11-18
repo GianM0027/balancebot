@@ -1,0 +1,7 @@
+tau_stall = 0.1667 N m, omega_0 = 29.322 rad/s
+R = 9.23 Ohm, K_t = 0.1282 N m/A, K_e = 0.4093 V s/rad, K_t/K_e = 0.313
+v_max = 1.349 m/s
+PID from 10 deg with motors: max |V| = 5.59 V, max |i| = 0.42 A per motor, min torque margin = 0.153 N m
+LQR from 10 deg with motors: max |V| = 6.15 V, max |i| = 0.61 A per motor, min torque margin = 0.137 N m
+PID region of attraction: 10.8 V: 34 deg, 11.1 V: 34 deg, 12.0 V: 38 deg, 12.6 V: 40 deg
+LQR region of attraction: 10.8 V: 34 deg, 11.1 V: 34 deg, 12.0 V: 38 deg, 12.6 V: 40 deg

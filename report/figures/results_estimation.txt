@@ -1,0 +1,5 @@
+alpha = 0.998, T = 2.495 s
+accelerometer: rms error 0.904 deg, max 14.495 deg
+gyroscope: rms error 0.078 deg, max 0.144 deg
+complementary filter: rms error 0.110 deg, max 0.367 deg
+closed loop on the estimate: t_end = 8.00 s, theta(8 s) = 0.014 deg, x(8 s) = -1.34 cm

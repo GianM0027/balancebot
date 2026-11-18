@@ -87,12 +87,12 @@ and $\beta = a\mb g l/D$,
   = \begin{bmatrix} 0 \\ 0 \\ (c/r + b_0)/D \\ -(a + b_0/r)/D \end{bmatrix} .
   \label{eq:AB}
 \end{equation}
-With the parameters of \cref{tab:nominal}: $\alpha = \SI{-10.34}{s^{-2}}$,
-$\beta = \SI{176.48}{s^{-2}}$, $b_3 = \SI{123.50}{kg^{-1}.m^{-1}}$,
-$b_4 = \SI{-1309.37}{kg^{-1}.m^{-2}}$. The same matrices were obtained
+With the parameters of \cref{tab:nominal}: $\alpha = \SI{-10.43}{s^{-2}}$,
+$\beta = \SI{132.33}{s^{-2}}$, $b_3 = \SI{70.18}{kg^{-1}.m^{-1}}$,
+$b_4 = \SI{-558.49}{kg^{-1}.m^{-2}}$. The same matrices were obtained
 numerically, by central finite differences of the nonlinear $\bm f(\bm s,\tau)$
 of \cref{eq:forward} about the equilibrium with step \num{1e-6}; the largest
-difference between the two is \num{2.2e-10}.
+difference between the two is \num{1.6e-10}.
 
 \subsection{Eigenvalues}
 
@@ -118,13 +118,13 @@ The first column has a single non-zero entry, so expanding along it,
 \end{equation}
 The eigenvalues are therefore
 \begin{equation}
-  \lambda_{1,2} = 0, \qquad \lambda_{3,4} = \pm\sqrt{\beta} = \pm\sqrt{\frac{a\,\mb g l}{D}} = \pm\SI{13.28}{s^{-1}} .
+  \lambda_{1,2} = 0, \qquad \lambda_{3,4} = \pm\sqrt{\beta} = \pm\sqrt{\frac{a\,\mb g l}{D}} = \pm\SI{11.50}{s^{-1}} .
 \end{equation}
 The double zero belongs to the position: with $\tau = 0$ nothing acts on $x$
 other than the coupling with $\theta$, and the robot has no preferred position.
 The positive eigenvalue makes the equilibrium unstable: a deviation in
 $\theta$ grows as $e^{\sqrt\beta\,t}$, by a factor $e$ every
-$1/\sqrt\beta = \SI{75}{ms}$. The coefficient $\alpha$ does not affect the
+$1/\sqrt\beta = \SI{87}{ms}$. The coefficient $\alpha$ does not affect the
 eigenvalues: the motion of the wheels does not act back on $\theta$.
 
 \paragraph{Comparison with the nonlinear model.} With $\tau = 0$,
@@ -146,12 +146,13 @@ hence
 \toprule
 $t$ [s] & $\theta$, linear [deg] & $\theta$, nonlinear [deg] \\
 \midrule
-0.05 & 3.7  & 3.7  \\
-0.10 & 6.1  & 6.0  \\
-0.15 & 11.2 & 11.1 \\
-0.20 & 21.5 & 20.7 \\
-0.25 & 41.6 & 37.2 \\
-0.30 & 80.7 & 62.0 \\
+0.05 & 3.5  & 3.5  \\
+0.10 & 5.2  & 5.2  \\
+0.15 & 8.7  & 8.6  \\
+0.20 & 15.1 & 14.8 \\
+0.25 & 26.7 & 25.3 \\
+0.30 & 47.3 & 41.4 \\
+0.35 & 84.1 & 63.7 \\
 \bottomrule
 \end{tabular}
 \end{table}

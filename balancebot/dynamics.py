@@ -49,7 +49,14 @@ def bias_vector(q: np.ndarray, qd: np.ndarray, p: RobotParams) -> np.ndarray:
 
 
 def input_vector(p: RobotParams) -> np.ndarray:
-    """Input vector B, shape (2,): how the motor torque tau enters each equation."""
+    """Input vector B, shape (2,): how the motor torque tau enters each equation.
+
+    Args:
+        p: robot parameters.
+
+    Returns:
+        [1/r, -1]: tau/r in the x equation, -tau (reaction on the body) in the theta equation.
+    """
     return np.array([1/p.r, -1.0])
 
 

@@ -1,0 +1,12 @@
+a = 0.8314, b0 = 0.06555, c = 0.01003, D = 4.0402e-03
+alpha = -10.433, beta = 132.332, b3 = 70.178, b4 = -558.493
+max |A - A_num| = 1.6e-10, max |B - B_num| = 0.0e+00
+lambda = 11.504 1/s, 1/lambda = 86.9 ms
+rank C = 4
+t=0.05: linear 3.5 deg, nonlinear 3.5 deg
+t=0.10: linear 5.2 deg, nonlinear 5.2 deg
+t=0.15: linear 8.7 deg, nonlinear 8.6 deg
+t=0.20: linear 15.1 deg, nonlinear 14.8 deg
+t=0.25: linear 26.7 deg, nonlinear 25.3 deg
+t=0.30: linear 47.3 deg, nonlinear 41.4 deg
+t=0.35: linear 84.1 deg, nonlinear 63.7 deg

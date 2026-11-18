@@ -13,7 +13,14 @@ from .params import RobotParams
 
 
 def linearize(p: RobotParams) -> Tuple[np.ndarray, np.ndarray]:
-    """Analytic A (4x4) and B (4x1) at the upright equilibrium."""
+    """Analytic A (4x4) and B (4x1) at the upright equilibrium.
+
+    Args:
+        p: robot parameters.
+
+    Returns:
+        (A, B) of  s_dot = A s + B tau,  s = [x, theta, x_dot, theta_dot].
+    """
     a = p.m_w + p.I_w / p.r**2 + p.m_b
     b0 = p.m_b * p.l
     c = p.m_b * p.l**2 + p.I_b
@@ -30,7 +37,17 @@ def linearize(p: RobotParams) -> Tuple[np.ndarray, np.ndarray]:
 def linearize_numerical(f: Callable[[np.ndarray, float], np.ndarray],
                         s_eq: np.ndarray, tau_eq: float = 0.0,
                         eps: float = 1e-6) -> Tuple[np.ndarray, np.ndarray]:
-    """Jacobians of s_dot = f(s, tau) at (s_eq, tau_eq) by central differences."""
+    """Jacobians of s_dot = f(s, tau) at (s_eq, tau_eq) by central differences.
+
+    Args:
+        f:      dynamics, called as f(s, tau) -> s_dot.
+        s_eq:   state of the linearisation point.
+        tau_eq: input of the linearisation point [N m].
+        eps:    perturbation used for the finite differences.
+
+    Returns:
+        (A, B): A = df/ds (n x n), B = df/dtau (n x 1).
+    """
     s_eq = np.asarray(s_eq, dtype=float)
     A = np.column_stack([(f(s_eq + eps * e, tau_eq) - f(s_eq - eps * e, tau_eq)) / (2 * eps)
                          for e in np.eye(len(s_eq))])
@@ -39,5 +56,13 @@ def linearize_numerical(f: Callable[[np.ndarray, float], np.ndarray],
 
 
 def controllability_matrix(A: np.ndarray, B: np.ndarray) -> np.ndarray:
-    """[B, AB, A^2 B, ..., A^(n-1) B]."""
+    """[B, AB, A^2 B, ..., A^(n-1) B]; the system is controllable iff its rank is n.
+
+    Args:
+        A: state matrix (n x n).
+        B: input matrix (n x 1).
+
+    Returns:
+        Controllability matrix (n x n).
+    """
     return np.hstack([np.linalg.matrix_power(A, k) @ B for k in range(A.shape[0])])

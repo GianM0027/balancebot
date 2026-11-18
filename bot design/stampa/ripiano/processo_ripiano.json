@@ -1,0 +1,19 @@
+{
+    "type": "process",
+    "name": "Robot - ripiano",
+    "inherits": "0.20mm Standard @BBL A1M",
+    "from": "User",
+    "is_custom_defined": "0",
+    "version": "2.0.0.0",
+    "print_settings_id": "Robot - ripiano",
+    "layer_height": "0.2",
+    "wall_loops": "3",
+    "sparse_infill_density": "25%",
+    "sparse_infill_pattern": "gyroid",
+    "top_shell_layers": "4",
+    "bottom_shell_layers": "4",
+    "enable_support": "0",
+    "xy_hole_compensation": "0",
+    "enable_overhang_speed": "1",
+    "slowdown_for_curled_perimeters": "1"
+}

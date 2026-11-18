@@ -18,6 +18,15 @@ def euler_step(f: Dynamics, t: float, s: np.ndarray, dt: float) -> np.ndarray:
         s_{k+1} = s_k + dt * f(t_k, s_k)
 
     First-order accurate: the global error scales as dt.
+
+    Args:
+        f:  right-hand side of s_dot = f(t, s), called as f(t, s) -> s_dot.
+        t:  time at the start of the step [s].
+        s:  state at the start of the step.
+        dt: step length [s].
+
+    Returns:
+        State at time t + dt (same shape as s).
     """
     s_new = s + dt * f(t, s)
     return s_new
@@ -33,6 +42,15 @@ def rk4_step(f: Dynamics, t: float, s: np.ndarray, dt: float) -> np.ndarray:
         s_{k+1} = s_k + dt/6 * (k1 + 2k2 + 2k3 + k4)
 
     Fourth-order accurate: the global error scales as dt^4.
+
+    Args:
+        f:  right-hand side of s_dot = f(t, s), called as f(t, s) -> s_dot.
+        t:  time at the start of the step [s].
+        s:  state at the start of the step.
+        dt: step length [s].
+
+    Returns:
+        State at time t + dt (same shape as s).
     """
     k1 = f(t, s)
     k2 = f(t + dt/2, s + dt/2 * k1)

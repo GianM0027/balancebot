@@ -1,0 +1,6 @@
+PID: kp_min = 0.2369 N m/rad, omega_n = 14.43 rad/s, zeta = 0.193, kd for zeta=1: 0.0517
+LQR K = -0.1000, -0.9001, -0.1772, -0.1378
+LQR closed-loop eigenvalues = -58.46+0.00j, -3.62+0.00j, -1.21+0.42j, -1.21-0.42j
+max |lambda| dt = 0.292
+PID from 10 deg: max |tau| = 0.106 N m, x(5 s) = 13.7 cm, x(8 s) = 18.5 cm, x_dot(8 s) = 1.44 cm/s, max x = 18.5 cm
+LQR from 10 deg: max |tau| = 0.157 N m, x(5 s) = 0.3 cm, x(8 s) = -0.0 cm, x_dot(8 s) = -0.00 cm/s, max x = 10.9 cm
